@@ -3,38 +3,95 @@ import './App.css';
 import MealCard from './components/MealCard';
 import PointsDisplay from './components/PointsDisplay';
 import BadgeSystem from './components/BadgeSystem';
-import { mealData, recommendedProducts } from './data/staticData';
+import { 
+  mealData, 
+  dessertData, 
+  electronicsData, 
+  babyData, 
+  algerianData,
+  beautyData,
+  homeData,
+  recommendedProducts, 
+  categorizeProducts,
+  productCategories,
+  createComprehensiveSuggestions
+} from './data/staticData';
 
 function App() {
-  const [meals, setMeals] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [points, setPoints] = useState(0);
   const [badges, setBadges] = useState([]);
-  const [selectedMeal, setSelectedMeal] = useState(null);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const [showReward, setShowReward] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState('food');
 
   useEffect(() => {
-    // Generate initial meals based on recommended products
-    generateMeals();
+    // Generate initial suggestions based on recommended products
+    generateSuggestions();
   }, []);
 
-  const generateMeals = () => {
-    // Simulate AI meal generation based on recommended products
-    const availableMeals = mealData.filter(meal => 
-      meal.ingredients.some(ingredient => 
-        recommendedProducts.includes(ingredient)
-      )
-    );
+  const generateSuggestions = () => {
+    // Create comprehensive suggestions based on recommended products
+    const comprehensiveSuggestions = createComprehensiveSuggestions(recommendedProducts);
     
-    // Shuffle and take first 4 meals
-    const shuffled = availableMeals.sort(() => 0.5 - Math.random());
-    setMeals(shuffled.slice(0, 4));
+    if (comprehensiveSuggestions.length > 0) {
+      setSuggestions(comprehensiveSuggestions);
+      // Set category based on the first suggestion
+      setCurrentCategory(comprehensiveSuggestions[0].bundleType);
+      return;
+    }
+
+    // Fallback to basic suggestions if no comprehensive suggestions available
+    const categories = categorizeProducts(recommendedProducts);
+    
+    // Find the category with the most products
+    let maxCategory = 'food';
+    let maxCount = 0;
+    
+    Object.keys(categories).forEach(category => {
+      if (categories[category].length > maxCount) {
+        maxCount = categories[category].length;
+        maxCategory = category;
+      }
+    });
+
+    setCurrentCategory(maxCategory);
+
+    // Get appropriate suggestions based on category
+    let availableSuggestions = [];
+    switch (maxCategory) {
+      case 'food':
+        availableSuggestions = [...mealData, ...algerianData];
+        break;
+      case 'dessert':
+        availableSuggestions = dessertData;
+        break;
+      case 'electronics':
+        availableSuggestions = electronicsData;
+        break;
+      case 'baby':
+        availableSuggestions = babyData;
+        break;
+      case 'beauty':
+        availableSuggestions = beautyData;
+        break;
+      case 'home':
+        availableSuggestions = homeData;
+        break;
+      default:
+        availableSuggestions = mealData;
+    }
+    
+    // Shuffle and take first 4 suggestions
+    const shuffled = availableSuggestions.sort(() => 0.5 - Math.random());
+    setSuggestions(shuffled.slice(0, 4));
   };
 
-  const handleMealSelect = (meal, isBestMeal = false) => {
-    setSelectedMeal(meal);
+  const handleSuggestionSelect = (suggestion, isBestSuggestion = false) => {
+    setSelectedSuggestion(suggestion);
     
-    // Award points based on meal selection
-    const pointsToAdd = isBestMeal ? 110 : 40;
+    // Award points based on suggestion selection
+    const pointsToAdd = isBestSuggestion ? 110 : 40;
     setPoints(prev => prev + pointsToAdd);
     
     // Show reward animation
@@ -60,8 +117,8 @@ function App() {
     if (points >= 500 && !badges.some(b => b.id === 'meal_master')) {
       newBadges.push({
         id: 'meal_master',
-        name: 'Meal Master',
-        description: 'You\'re becoming a meal planning expert!',
+        name: 'Suggestion Master',
+        description: 'You\'re becoming a suggestion expert!',
         icon: '👨‍🍳'
       });
     }
@@ -71,18 +128,29 @@ function App() {
     }
   };
 
-  const shuffleMeals = () => {
-    generateMeals();
+  const shuffleSuggestions = () => {
+    generateSuggestions();
   };
 
   return (
     <div className="app">
       <div className="header">
         <h1 className="title">
-          <span className="title-icon">🍽️</span>
-          AI Meal Generator
+          <span className="title-icon">🎯</span>
+          AI Smart Suggestions
         </h1>
-        <p className="subtitle">Turn your recommended products into delicious meals!</p>
+        <p className="subtitle">Turn your recommended products into smart suggestions!</p>
+        <div className="category-indicator">
+          <span className="current-category">
+            {suggestions.length > 0 && suggestions[0].bundleType === 'food' ? 'Food & Recipes' :
+             suggestions.length > 0 && suggestions[0].bundleType === 'electronics' ? 'Electronics & Tech' :
+             suggestions.length > 0 && suggestions[0].bundleType === 'beauty' ? 'Beauty & Skincare' :
+             suggestions.length > 0 && suggestions[0].bundleType === 'baby' ? 'Baby & Kids' :
+             suggestions.length > 0 && suggestions[0].bundleType === 'home' ? 'Home & Garden' :
+             suggestions.length > 0 && suggestions[0].bundleType === 'innovation' ? 'Innovation Bundles' :
+             'Mixed Suggestions'}
+          </span>
+        </div>
       </div>
 
       <div className="dashboard">
@@ -103,31 +171,61 @@ function App() {
         </div>
 
         <div className="main-content">
-          <div className="meals-header">
-            <h2>Today's Meal Suggestions</h2>
-            <button className="shuffle-btn" onClick={shuffleMeals}>
-              🔄 Shuffle Meals
+          <div className="suggestions-header">
+            <h2>Today's Smart Suggestions</h2>
+            <button className="shuffle-btn" onClick={shuffleSuggestions}>
+              🔄 Shuffle Suggestions
             </button>
           </div>
 
-          <div className="meals-grid">
-            {meals.map((meal, index) => (
+          <div className="suggestions-grid">
+            {suggestions.map((suggestion, index) => (
               <MealCard
-                key={meal.id}
-                meal={meal}
+                key={suggestion.id}
+                meal={suggestion}
                 index={index}
-                onSelect={handleMealSelect}
-                isBestMeal={index === 0} // First meal is considered "best"
+                onSelect={handleSuggestionSelect}
+                isBestMeal={index === 0} // First suggestion is considered "best"
               />
             ))}
           </div>
 
-          {selectedMeal && (
-            <div className="selected-meal-info">
-              <h3>✅ You selected: {selectedMeal.name}</h3>
-              <p>Great choice! You earned {selectedMeal.isBestMeal ? 110 : 40} points!</p>
+          {selectedSuggestion && (
+            <div className="selected-suggestion-info">
+              <h3>✅ You selected: {selectedSuggestion.name}</h3>
+              <p>Great choice! You earned {selectedSuggestion.isBestMeal ? 110 : 40} points!</p>
             </div>
           )}
+
+          <div className="recommended-products-section">
+            <h3>📦 Your Recommended Products</h3>
+            <div className="products-grid-main">
+              {recommendedProducts.slice(0, 6).map((product, index) => (
+                <div key={index} className="product-card">
+                  <div className="product-icon">
+                    {product.includes('smart') ? '🏠' :
+                     product.includes('laptop') ? '💻' :
+                     product.includes('phone') ? '📱' :
+                     product.includes('baby') ? '👶' :
+                     product.includes('cleanser') || product.includes('moisturizer') ? '✨' :
+                     product.includes('lipstick') || product.includes('foundation') ? '💄' :
+                     product.includes('seeds') || product.includes('soil') ? '🌱' :
+                     product.includes('knife') || product.includes('cutting') ? '🍴' :
+                     product.includes('eggs') ? '🥚' :
+                     product.includes('milk') ? '🥛' :
+                     product.includes('bread') ? '🍞' :
+                     product.includes('tomato') ? '🍅' :
+                     product.includes('cheese') ? '🧀' :
+                     product.includes('chicken') ? '🍗' :
+                     product.includes('rice') ? '🍚' :
+                     product.includes('coffee') ? '☕' :
+                     '📦'}
+                  </div>
+                  <div className="product-name">{product}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -135,7 +233,7 @@ function App() {
         <div className="reward-animation">
           <div className="reward-content">
             <span className="reward-icon">🎉</span>
-            <span className="reward-text">+{selectedMeal?.isBestMeal ? 110 : 40} Points!</span>
+            <span className="reward-text">+{selectedSuggestion?.isBestMeal ? 110 : 40} Points!</span>
           </div>
         </div>
       )}

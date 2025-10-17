@@ -49,14 +49,20 @@ const MealCard = ({ meal, index, onSelect, isBestMeal }) => {
       
       <div className="meal-stats">
         <div className="stat">
-          <span className="stat-label">Calories:</span>
-          <span className="stat-value">{meal.calories}</span>
+          <span className="stat-label">{meal.calories === 'N/A' ? 'Type:' : 'Calories:'}</span>
+          <span className="stat-value">{meal.calories === 'N/A' ? meal.servings : meal.calories}</span>
         </div>
         <div className="stat">
           <span className="stat-label">Difficulty:</span>
           <span className="stat-value">{meal.difficulty}</span>
         </div>
       </div>
+      
+      {meal.description && (
+        <div className="bundle-description">
+          <p>{meal.description}</p>
+        </div>
+      )}
       
       <button 
         className={`select-meal-btn ${isBestMeal ? 'best-btn' : ''}`}
