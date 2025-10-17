@@ -188,17 +188,6 @@ export const mealData = [
     ingredients: ["eggs", "tomato", "cheese", "garlic"]
   },
   {
-    id: 18,
-    name: "Israeli Sabich Sandwich",
-    type: "Lunch",
-    emoji: "🥪",
-    prepTime: "15 min",
-    servings: "1",
-    calories: "480",
-    difficulty: "Medium",
-    ingredients: ["bread", "eggs", "tomato", "cheese"]
-  },
-  {
     id: 19,
     name: "Filipino Silog Breakfast",
     type: "Breakfast",
