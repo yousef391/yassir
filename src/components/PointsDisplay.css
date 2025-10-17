@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+.points-display {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  font-family: 'Poppins', sans-serif;
+}
+
+.points-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.trophy-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.points-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.points-value {
+  margin-bottom: 20px;
+}
+
+.points-number {
+  font-size: 3rem;
+  font-weight: bold;
+  display: block;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.points-label {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-left: 5px;
+}
+
+.points-progress {
+  text-align: left;
+}
+
+.progress-bar {
+  background: rgba(255, 255, 255, 0.2);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  background: linear-gradient(45deg, #ff6b9d, #c44569);
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
